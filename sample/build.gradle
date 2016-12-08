@@ -1,21 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
-
 apply plugin: 'com.android.application'
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile project(':adapterselector')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
-}
 
 android {
     compileSdkVersion 25
@@ -30,4 +13,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+dependencies {
+    compile project(':adapterselector')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 }

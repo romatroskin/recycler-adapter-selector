@@ -1,23 +1,7 @@
 version rootProject.ext.VERSION_NAME
 group rootProject.ext.GROUP
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
-
 apply plugin: 'com.android.library'
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:recyclerview-v7:25.0.1'
-}
 
 static def gitSha() {
     return 'git rev-parse --short HEAD'.execute().text.trim()
@@ -40,6 +24,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
 }
 
 task sourceJar(type: Jar) {
