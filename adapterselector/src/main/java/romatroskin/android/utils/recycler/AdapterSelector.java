@@ -15,7 +15,7 @@ public abstract class AdapterSelector {
     }
 
     public static RecyclerAdapterSelector.Builder with(RecyclerView recyclerView, ActionMode.Callback callback) {
-        return new RecyclerAdapterSelector.Builder(recyclerView).withCallback(callback);
+        return new RecyclerAdapterSelector.Builder(recyclerView).withCallback(callback).withMultiselection(true);
     }
 
     public static RecyclerAdapterSelector.Builder with(RecyclerView recyclerView, PopupMenu popupMenu) {

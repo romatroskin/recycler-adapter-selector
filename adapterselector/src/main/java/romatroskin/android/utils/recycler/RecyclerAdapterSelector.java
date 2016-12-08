@@ -9,7 +9,12 @@ import android.support.v7.view.ActionMode;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import romatroskin.android.utils.AttrUtils;
 
@@ -18,7 +23,7 @@ import romatroskin.android.utils.AttrUtils;
  */
 
 final class RecyclerAdapterSelector extends AdapterSelector {
-    private final static int COLOR_SEMITRANSPARENT = 0x88000000;
+    private final static int COLOR_SELECTED = 0x33000000;
 
     private PopupMenu popupMenu;
     private ActionMode.Callback callback;
@@ -48,17 +53,18 @@ final class RecyclerAdapterSelector extends AdapterSelector {
             @Override
             public void onViewHolderCreated(final @NonNull RecyclerView.ViewHolder holder) {
                 final Context context = holder.itemView.getContext();
-
-                if(multiselection && context instanceof AppCompatActivity) {
+                @DrawableRes int backgroundResource;
+                if(multiselection) {
                     holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View view) {
                             final AppCompatActivity activity = (AppCompatActivity) context;
                             if(actionMode == null) {
-                                actionMode = activity.startSupportActionMode(callback);
+                                actionMode = activity.startSupportActionMode(new CallbackImpl());
                                 toggleMultiSelection(holder.getAdapterPosition());
                                 return true;
                             }
+
                             return false;
                         }
                     });
@@ -71,6 +77,9 @@ final class RecyclerAdapterSelector extends AdapterSelector {
                             }
                         }
                     });
+
+                    backgroundResource = R.drawable.adapter_selector;
+
                 } else {
                     holder.itemView.setOnClickListener(onClickListener != null
                             ? onClickListener : popupMenu != null? new View.OnClickListener() {
@@ -79,24 +88,17 @@ final class RecyclerAdapterSelector extends AdapterSelector {
                             popupMenu.show();
                         }
                     } : null);
+
+                    backgroundResource = AttrUtils.obtainResId(context,
+                            android.R.attr.selectableItemBackground);
                 }
+
+                holder.itemView.setBackgroundResource(backgroundResource);
             }
 
             @Override
             public void onViewHolderBind(@NonNull RecyclerView.ViewHolder holder, int position) {
-                final Context context = holder.itemView.getContext();
-
-                if(multiselection) {
-                    if (selectedItems.get(position, false)) {
-                        holder.itemView.setBackgroundColor(COLOR_SEMITRANSPARENT);
-                    } else {
-                        holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                    }
-                } else {
-                    final @DrawableRes int backgroundResource = AttrUtils.obtainResId(
-                            context, R.attr.selectableItemBackground);
-                    holder.itemView.setBackgroundResource(backgroundResource);
-                }
+                holder.itemView.setSelected(multiselection && selectedItems.get(position, false));
             }
         });
 
@@ -112,15 +114,63 @@ final class RecyclerAdapterSelector extends AdapterSelector {
 
         if(actionMode != null) {
             actionMode.setTitle(String.valueOf(selectedItems.size()));
-            actionMode.invalidate();
 
             if(selectedItems.size() < 1) {
                 actionMode.finish();
-                actionMode = null;
+            } else {
+                actionMode.invalidate();
             }
         }
 
         recyclerView.getAdapter().notifyItemChanged(position);
+    }
+
+    public List<Integer> getSelections() {
+        final List<Integer> resultList = new ArrayList<>();
+
+        for(int i = 0; i < resultList.size(); i++) {
+            resultList.add(selectedItems.keyAt(i));
+        }
+
+        return resultList;
+    }
+
+    public void clearSelections() {
+        for(Integer position : this.getSelections()) {
+            selectedItems.delete(position);
+            recyclerView.getAdapter().notifyItemChanged(position);
+        }
+
+        actionMode = null;
+    }
+
+    private class CallbackImpl implements ActionMode.Callback {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            return callback.onCreateActionMode(mode, menu);
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return callback.onPrepareActionMode(mode, menu);
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            final boolean result = callback.onActionItemClicked(mode, item);
+
+            if(result && item.getItemId() != android.R.id.home) {
+                actionMode.finish();
+            }
+
+            return result;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            clearSelections();
+            callback.onDestroyActionMode(mode);
+        }
     }
 
     /**

@@ -1,1 +1,4 @@
-include ':sample', ':adapterselector'
+include ':sample'
+include ':adapterselector'
+
+rootProject.name = "recycler-utility-root"
