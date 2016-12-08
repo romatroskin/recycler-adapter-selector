@@ -1,7 +1,6 @@
 package romatroskin.android.utils.recycler;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -23,8 +22,6 @@ import romatroskin.android.utils.AttrUtils;
  */
 
 final class RecyclerAdapterSelector extends AdapterSelector {
-    private final static int COLOR_SELECTED = 0x33000000;
-
     private PopupMenu popupMenu;
     private ActionMode.Callback callback;
     private SparseBooleanArray selectedItems;
@@ -32,6 +29,7 @@ final class RecyclerAdapterSelector extends AdapterSelector {
 
     private ActionMode actionMode;
     private boolean multiselection;
+    private RecyclerView.Adapter adapter;
     private final RecyclerView recyclerView;
 
     private RecyclerAdapterSelector(Builder builder) {
@@ -47,60 +45,61 @@ final class RecyclerAdapterSelector extends AdapterSelector {
 
     private void init() {
         selectedItems = new SparseBooleanArray();
+        adapter = recyclerView.getAdapter();
 
-        final RecyclerWrapperAdapter.Builder b = new RecyclerWrapperAdapter.Builder(
-                recyclerView.getAdapter(), new RecyclerWrapperAdapter.Callback() {
-            @Override
-            public void onViewHolderCreated(final @NonNull RecyclerView.ViewHolder holder) {
-                final Context context = holder.itemView.getContext();
-                @DrawableRes int backgroundResource;
-                if(multiselection) {
-                    holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            final AppCompatActivity activity = (AppCompatActivity) context;
-                            if(actionMode == null) {
-                                actionMode = activity.startSupportActionMode(new CallbackImpl());
-                                toggleMultiSelection(holder.getAdapterPosition());
-                                return true;
-                            }
+        final RecyclerWrapperAdapter.Builder b = new RecyclerWrapperAdapter.Builder(adapter,
+                new RecyclerWrapperAdapter.Callback() {
+                    @Override
+                    public void onViewHolderCreated(final @NonNull RecyclerView.ViewHolder holder) {
+                        final Context context = holder.itemView.getContext();
 
-                            return false;
+                        @DrawableRes int backgroundResource;
+                        if(multiselection) {
+                            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View view) {
+                                    final AppCompatActivity activity = (AppCompatActivity) context;
+                                    if(actionMode == null) {
+                                        actionMode = activity.startSupportActionMode(new CallbackImpl());
+                                        toggleMultiSelection(holder.getAdapterPosition());
+                                    }
+
+                                    return true;
+                                }
+                            });
+
+                            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if(actionMode != null) {
+                                        toggleMultiSelection(holder.getAdapterPosition());
+                                    }
+                                }
+                            });
+
+                            backgroundResource = R.drawable.adapter_selector;
+
+                        } else {
+                            holder.itemView.setOnClickListener(onClickListener != null
+                                    ? onClickListener : popupMenu != null? new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    popupMenu.show();
+                                }
+                            } : null);
+
+                            backgroundResource = AttrUtils.obtainResId(context,
+                                    android.R.attr.selectableItemBackground);
                         }
-                    });
 
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if(actionMode != null) {
-                                toggleMultiSelection(holder.getAdapterPosition());
-                            }
-                        }
-                    });
+                        holder.itemView.setBackgroundResource(backgroundResource);
+                    }
 
-                    backgroundResource = R.drawable.adapter_selector;
-
-                } else {
-                    holder.itemView.setOnClickListener(onClickListener != null
-                            ? onClickListener : popupMenu != null? new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            popupMenu.show();
-                        }
-                    } : null);
-
-                    backgroundResource = AttrUtils.obtainResId(context,
-                            android.R.attr.selectableItemBackground);
-                }
-
-                holder.itemView.setBackgroundResource(backgroundResource);
-            }
-
-            @Override
-            public void onViewHolderBind(@NonNull RecyclerView.ViewHolder holder, int position) {
-                holder.itemView.setSelected(multiselection && selectedItems.get(position, false));
-            }
-        });
+                    @Override
+                    public void onViewHolderBind(@NonNull RecyclerView.ViewHolder holder, int position) {
+                        holder.itemView.setSelected(multiselection && selectedItems.get(position, false));
+                    }
+                });
 
         this.recyclerView.setAdapter(b.build());
     }
@@ -122,13 +121,13 @@ final class RecyclerAdapterSelector extends AdapterSelector {
             }
         }
 
-        recyclerView.getAdapter().notifyItemChanged(position);
+        adapter.notifyItemChanged(position);
     }
 
     public List<Integer> getSelections() {
-        final List<Integer> resultList = new ArrayList<>();
-
-        for(int i = 0; i < resultList.size(); i++) {
+        final List<Integer> resultList = new ArrayList<>(
+                selectedItems.size());
+        for(int i = 0; i < selectedItems.size(); i++) {
             resultList.add(selectedItems.keyAt(i));
         }
 
@@ -136,12 +135,10 @@ final class RecyclerAdapterSelector extends AdapterSelector {
     }
 
     public void clearSelections() {
-        for(Integer position : this.getSelections()) {
+        for(Integer position : getSelections()) {
             selectedItems.delete(position);
-            recyclerView.getAdapter().notifyItemChanged(position);
+            adapter.notifyItemChanged(position);
         }
-
-        actionMode = null;
     }
 
     private class CallbackImpl implements ActionMode.Callback {
@@ -159,7 +156,7 @@ final class RecyclerAdapterSelector extends AdapterSelector {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             final boolean result = callback.onActionItemClicked(mode, item);
 
-            if(result && item.getItemId() != android.R.id.home) {
+            if(result) {
                 actionMode.finish();
             }
 
@@ -168,8 +165,10 @@ final class RecyclerAdapterSelector extends AdapterSelector {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            clearSelections();
             callback.onDestroyActionMode(mode);
+
+            clearSelections();
+            actionMode = null;
         }
     }
 

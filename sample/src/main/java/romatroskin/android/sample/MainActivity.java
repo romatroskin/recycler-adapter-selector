@@ -1,14 +1,16 @@
 package romatroskin.android.sample;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
+                final MenuItem editItem = menu.findItem(R.id.menu_item_edit);
+                final Drawable editDrawable = DrawableCompat.wrap(editItem.getIcon());
+                DrawableCompat.setTint(editDrawable, Color.WHITE);
+                editItem.setIcon(editDrawable);
+
+                final MenuItem deleteItem = menu.findItem(R.id.menu_item_delete);
+                final Drawable deleteDrawable = DrawableCompat.wrap(deleteItem.getIcon());
+                DrawableCompat.setTint(deleteDrawable, Color.WHITE);
+                deleteItem.setIcon(deleteDrawable);
+
+                return true;
             }
 
             @Override
@@ -64,8 +76,22 @@ public class MainActivity extends AppCompatActivity {
         private static final List<String> sampleItems;
         static {
             sampleItems = new ArrayList<>();
-            sampleItems.add("Lorem");
-            sampleItems.add("ipsum");
+            sampleItems.add("Kafka");
+            sampleItems.add("left");
+            sampleItems.add("his");
+            sampleItems.add("work");
+            sampleItems.add("both");
+            sampleItems.add("published");
+            sampleItems.add("and");
+            sampleItems.add("unpublished");
+            sampleItems.add("to");
+            sampleItems.add("his");
+            sampleItems.add("friend");
+            sampleItems.add("and");
+            sampleItems.add("literary");
+            sampleItems.add("executor");
+            sampleItems.add("Max");
+            sampleItems.add("Brod");
         }
 
         @Override
