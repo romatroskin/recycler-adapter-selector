@@ -34,6 +34,28 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
             }
         }).build();
+
+//        AdapterSelector.with(recyclerView, new ActionMode.Callback() {
+//            @Override
+//            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onDestroyActionMode(ActionMode mode) {
+//
+//            }
+//        }).build();
     }
 
     private static class SampleAdapter extends RecyclerView.Adapter {
