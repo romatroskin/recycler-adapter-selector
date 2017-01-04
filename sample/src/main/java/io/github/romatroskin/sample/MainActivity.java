@@ -1,4 +1,4 @@
-package romatroskin.android.sample;
+package io.github.romatroskin.sample;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -19,7 +19,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import romatroskin.android.utils.recycler.AdapterSelector;
+import io.github.romatroskin.utils.AdapterSelector;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -32,13 +32,6 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView.Adapter adapter = new SampleAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-
-//        AdapterSelector.with(recyclerView, new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
-//            }
-//        }).build();
 
         AdapterSelector.with(recyclerView, new ActionMode.Callback() {
             @Override

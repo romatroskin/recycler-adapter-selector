@@ -1,4 +1,4 @@
-package romatroskin.android.utils;
+package io.github.romatroskin;
 
 import android.content.Context;
 import android.content.res.TypedArray;

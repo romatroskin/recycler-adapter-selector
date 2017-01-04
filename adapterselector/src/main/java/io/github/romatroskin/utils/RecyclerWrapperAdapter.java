@@ -1,4 +1,4 @@
-package romatroskin.android.utils.recycler;
+package io.github.romatroskin.utils;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
@@ -143,7 +143,7 @@ public class RecyclerWrapperAdapter extends RecyclerView.Adapter {
          *
          * @return a {@code RecyclerWrapperAdapter} built with parameters of this {@code RecyclerWrapperAdapter.Builder}
          */
-        public RecyclerWrapperAdapter build() {
+        RecyclerWrapperAdapter build() {
             return new RecyclerWrapperAdapter(this);
         }
     }

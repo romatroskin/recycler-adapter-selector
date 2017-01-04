@@ -1,4 +1,4 @@
-package romatroskin.android.utils.recycler;
+package io.github.romatroskin.utils;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
@@ -15,7 +15,8 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-import romatroskin.android.utils.AttrUtils;
+import io.github.romatroskin.AttrUtils;
+import io.github.romatroskin.R;
 
 /**
  * Created by romatroskin on 12/6/16.
@@ -44,8 +45,8 @@ final class RecyclerAdapterSelector extends AdapterSelector {
 
 
     private void init() {
-        selectedItems = new SparseBooleanArray();
         adapter = recyclerView.getAdapter();
+        selectedItems = new SparseBooleanArray();
 
         final RecyclerWrapperAdapter.Builder b = new RecyclerWrapperAdapter.Builder(adapter,
                 new RecyclerWrapperAdapter.Callback() {

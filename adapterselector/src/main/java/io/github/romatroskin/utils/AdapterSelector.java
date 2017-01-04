@@ -1,4 +1,4 @@
-package romatroskin.android.utils.recycler;
+package io.github.romatroskin.utils;
 
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.PopupMenu;
