@@ -1,8 +1,10 @@
 package io.github.romatroskin.utils;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.PopupMenu;
@@ -11,6 +13,7 @@ import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,19 +43,25 @@ final class RecyclerAdapterSelector extends AdapterSelector {
         multiselection = builder.multiselection;
         recyclerView = builder.recyclerView;
 
+        selectedItems = new SparseBooleanArray();
+
         this.init();
     }
 
 
     private void init() {
-        adapter = recyclerView.getAdapter();
-        selectedItems = new SparseBooleanArray();
+        if (recyclerView.getAdapter() == null) {
+            throw new IllegalStateException("Adapter needs to be set!");
+        }
 
-        final RecyclerWrapperAdapter.Builder b = new RecyclerWrapperAdapter.Builder(adapter,
+        adapter = recyclerView.getAdapter();
+
+        final RecyclerWrapperAdapter.Builder wab = new RecyclerWrapperAdapter.Builder(adapter,
                 new RecyclerWrapperAdapter.Callback() {
                     @Override
                     public void onViewHolderCreated(final @NonNull RecyclerView.ViewHolder holder) {
                         final Context context = holder.itemView.getContext();
+                        final Drawable defaultBackgroundDrawable = holder.itemView.getBackground();
 
                         @DrawableRes int backgroundResource;
                         if(multiselection) {
@@ -93,7 +102,12 @@ final class RecyclerAdapterSelector extends AdapterSelector {
                                     android.R.attr.selectableItemBackground);
                         }
 
-                        holder.itemView.setBackgroundResource(backgroundResource);
+                        if(holder.itemView instanceof FrameLayout) {
+                            final FrameLayout frameLayout = (FrameLayout) holder.itemView;
+                            frameLayout.setForeground(ContextCompat.getDrawable(context, backgroundResource));
+                        } else {
+                            holder.itemView.setBackgroundResource(backgroundResource);
+                        }
                     }
 
                     @Override
@@ -102,7 +116,7 @@ final class RecyclerAdapterSelector extends AdapterSelector {
                     }
                 });
 
-        this.recyclerView.setAdapter(b.build());
+        this.recyclerView.setAdapter(wab.build());
     }
 
     private void toggleMultiSelection(int position) {

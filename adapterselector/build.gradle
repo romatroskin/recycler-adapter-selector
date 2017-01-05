@@ -5,7 +5,7 @@ static def gitSha() {
 }
 
 android {
-    resourcePrefix 'adapter_selector_'
+//    resourcePrefix 'adapter_selector_'
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
 

@@ -91,13 +91,13 @@ public class MainActivity extends AppCompatActivity {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             final Context context = parent.getContext();
             final View itemView = LayoutInflater.from(context)
-                    .inflate(R.layout.support_simple_spinner_dropdown_item, parent, false);
+                    .inflate(R.layout.sample_item_view, parent, false);
             return new SampleViewHolder(itemView);
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((TextView) holder.itemView).setText(sampleItems.get(position));
+            ((SampleViewHolder) holder).setText(sampleItems.get(position));
         }
 
         @Override
@@ -106,8 +106,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         class SampleViewHolder extends RecyclerView.ViewHolder {
+            TextView textView;
             SampleViewHolder(View itemView) {
                 super(itemView);
+                textView = (TextView) itemView.findViewById(R.id.sample_text_view);
+            }
+
+            public void setText(CharSequence text) {
+                textView.setText(text);
             }
         }
     }
