@@ -47,6 +47,15 @@ public class RecyclerWrapperAdapter extends RecyclerView.Adapter {
         this.wrappedAdapter.registerAdapterDataObserver(new DataObserver());
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return wrappedAdapter.getItemViewType(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return wrappedAdapter.getItemId(position);
+    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
