@@ -1,5 +1,10 @@
-# recycler-adapter-selector
+## recycler-adapter-selector
+
 ===========================
+
+[![Build Status](https://travis-ci.org/romatroskin/recycler-adapter-selector.svg?branch=master)](https://travis-ci.org/romatroskin/recycler-adapter-selector)
+
+---
 
 RecyclerView utility that implements selectable behaviors fast and easy
 
