@@ -1,5 +1,6 @@
 package io.github.romatroskin.utils;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -39,6 +40,7 @@ public class RecyclerWrapperAdapter<VH extends RecyclerView.ViewHolder>
         return wrappedAdapter.getItemId(position);
     }
 
+    @NonNull
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         final VH holder = wrappedAdapter.onCreateViewHolder(parent, viewType);
@@ -73,22 +75,22 @@ public class RecyclerWrapperAdapter<VH extends RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onViewAttachedToWindow(VH holder) {
+    public void onViewAttachedToWindow(@NonNull VH holder) {
         wrappedAdapter.onViewAttachedToWindow(holder);
     }
 
     @Override
-    public void onViewDetachedFromWindow(VH holder) {
+    public void onViewDetachedFromWindow(@NonNull VH holder) {
         wrappedAdapter.onViewDetachedFromWindow(holder);
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         wrappedAdapter.onAttachedToRecyclerView(recyclerView);
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
         wrappedAdapter.onDetachedFromRecyclerView(recyclerView);
     }
 
