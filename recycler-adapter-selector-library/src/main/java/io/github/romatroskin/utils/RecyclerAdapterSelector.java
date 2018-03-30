@@ -3,7 +3,6 @@ package io.github.romatroskin.utils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -33,7 +32,7 @@ final class RecyclerAdapterSelector extends AdapterSelector {
 
     private ActionMode actionMode;
     private boolean multiselection;
-    private RecyclerView.Adapter adapter;
+    private RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter;
     private final RecyclerView recyclerView;
 
     private RecyclerAdapterSelector(Builder builder) {
@@ -56,18 +55,15 @@ final class RecyclerAdapterSelector extends AdapterSelector {
 
         adapter = recyclerView.getAdapter();
 
-        final RecyclerWrapperAdapter.Builder wab = new RecyclerWrapperAdapter.Builder(adapter,
-                new RecyclerWrapperAdapter.Callback() {
-                    @Override
-                    public void onViewHolderCreated(final @NonNull RecyclerView.ViewHolder holder) {
-                        final Context context = holder.itemView.getContext();
-                        final Drawable defaultBackgroundDrawable = holder.itemView.getBackground();
+        final RecyclerWrapperAdapter.Builder<? extends RecyclerView.ViewHolder> wab =
+                new RecyclerWrapperAdapter.Builder<>(adapter)
+                        .with(holder -> {
+                            final Context context = holder.itemView.getContext();
+                            final Drawable defaultBackgroundDrawable = holder.itemView.getBackground();
 
-                        @DrawableRes int backgroundResource;
-                        if(multiselection) {
-                            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View view) {
+                            @DrawableRes int backgroundResource;
+                            if(multiselection) {
+                                holder.itemView.setOnLongClickListener(view -> {
                                     final AppCompatActivity activity = (AppCompatActivity) context;
                                     if(actionMode == null) {
                                         actionMode = activity.startSupportActionMode(new CallbackImpl());
@@ -75,46 +71,35 @@ final class RecyclerAdapterSelector extends AdapterSelector {
                                     }
 
                                     return true;
-                                }
-                            });
+                                });
 
-                            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
+                                holder.itemView.setOnClickListener(view -> {
                                     if(actionMode != null) {
                                         toggleMultiSelection(holder.getAdapterPosition());
                                     }
-                                }
-                            });
+                                });
 
-                            backgroundResource = R.drawable.adapter_selector;
+                                backgroundResource = R.drawable.adapter_selector;
 
-                        } else {
-                            holder.itemView.setOnClickListener(onClickListener != null
-                                    ? onClickListener : popupMenu != null? new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    popupMenu.show();
-                                }
-                            } : null);
+                            } else {
+                                holder.itemView.setOnClickListener(onClickListener != null
+                                        ? onClickListener : popupMenu != null? (View.OnClickListener) view -> popupMenu.show() : null);
 
-                            backgroundResource = AttrUtils.obtainResId(context,
-                                    android.R.attr.selectableItemBackground);
-                        }
+                                backgroundResource = AttrUtils.obtainResId(context,
+                                        android.R.attr.selectableItemBackground);
+                            }
 
-                        if(holder.itemView instanceof FrameLayout) {
-                            final FrameLayout frameLayout = (FrameLayout) holder.itemView;
-                            frameLayout.setForeground(ContextCompat.getDrawable(context, backgroundResource));
-                        } else {
-                            holder.itemView.setBackgroundResource(backgroundResource);
-                        }
-                    }
-
-                    @Override
-                    public void onViewHolderBind(@NonNull RecyclerView.ViewHolder holder, int position) {
-                        holder.itemView.setSelected(multiselection && selectedItems.get(position, false));
-                    }
-                });
+                            if(holder.itemView instanceof FrameLayout) {
+                                final FrameLayout frameLayout = (FrameLayout) holder.itemView;
+                                frameLayout.setForeground(ContextCompat.getDrawable(context, backgroundResource));
+                            } else {
+                                holder.itemView.setBackgroundResource(backgroundResource);
+                            }
+                        })
+                        .with((holder, position) -> holder.itemView.setSelected(
+                                multiselection && selectedItems.get(
+                                        position, false))
+                        );
 
         this.recyclerView.setAdapter(wab.build());
     }

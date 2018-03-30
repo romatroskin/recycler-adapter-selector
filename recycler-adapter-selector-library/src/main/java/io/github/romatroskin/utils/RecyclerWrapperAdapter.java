@@ -3,48 +3,27 @@ package io.github.romatroskin.utils;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-/**
- * Created by romatroskin on 12/7/16.
- */
+import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.Consumer;
 
 /**
  * The basic wrapper for {@link android.support.v7.widget.RecyclerView.Adapter}
  * with useful {@code Callback} interface provided, which can help extend
  * adapters by anonymous callback.
+ * @author romatroskin
+ * @version 1
+ * @since 12/7/16
  */
-public class RecyclerWrapperAdapter extends RecyclerView.Adapter {
+public class RecyclerWrapperAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+    final private RecyclerView.Adapter<VH> wrappedAdapter;
 
-    public interface Callback {
-        /**
-         * An {@link android.support.v7.widget.RecyclerView.Adapter} callback extension,
-         * which will be fired immediately after wrapped adapter
-         * {@link android.support.v7.widget.RecyclerView.ViewHolder} created.
-         * @param holder wrapped adapter view holder
-         */
-        void onViewHolderCreated(RecyclerView.ViewHolder holder);
-
-        /**
-         * An {@link android.support.v7.widget.RecyclerView.Adapter} callback extension,
-         * which will be fired before the wrapped adapter
-         * {@link android.support.v7.widget.RecyclerView.ViewHolder} bound.
-         * @param holder wrapped adapter view holder to bind
-         * @param position wrapped adapter view holder position
-         */
-        void onViewHolderBind(RecyclerView.ViewHolder holder, int position);
-    }
-
-    final private Callback callback;
-    final private RecyclerView.Adapter wrappedAdapter;
-
-    private RecyclerWrapperAdapter(Builder builder) {
-        callback = builder.callback;
+    private Consumer<VH> createFunction;
+    private BiConsumer<VH, Integer> bindFunction;
+    private RecyclerWrapperAdapter(Builder<VH> builder, Consumer<VH> create, BiConsumer<VH, Integer> bind) {
         wrappedAdapter = builder.wrappedAdapter;
-
-        this.init();
-    }
-
-    private void init() {
-        this.wrappedAdapter.registerAdapterDataObserver(new DataObserver());
+        createFunction = create;
+        bindFunction = bind;
+        wrappedAdapter.registerAdapterDataObserver(new DataObserver());
     }
 
     @Override
@@ -58,22 +37,28 @@ public class RecyclerWrapperAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final RecyclerView.ViewHolder holder = wrappedAdapter.onCreateViewHolder(parent, viewType);
+    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
+        final VH holder = wrappedAdapter.onCreateViewHolder(parent, viewType);
 
-        if(callback != null) {
-            callback.onViewHolderCreated(holder);
+        if(createFunction != null) {
+            try {
+                createFunction.accept(holder);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return holder;
     }
 
-    //TODO: eliminate unchecked call
     @Override
-    @SuppressWarnings("unchecked")
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(callback != null) {
-            callback.onViewHolderBind(holder, position);
+    public void onBindViewHolder(VH holder, int position) {
+        if(bindFunction != null) {
+            try {
+                bindFunction.accept(holder, position);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         wrappedAdapter.onBindViewHolder(holder, position);
@@ -84,17 +69,13 @@ public class RecyclerWrapperAdapter extends RecyclerView.Adapter {
         return wrappedAdapter.getItemCount();
     }
 
-    //TODO: eliminate unchecked call
     @Override
-    @SuppressWarnings("unchecked")
-    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+    public void onViewAttachedToWindow(VH holder) {
         wrappedAdapter.onViewAttachedToWindow(holder);
     }
 
-    //TODO: eliminate unchecked call
     @Override
-    @SuppressWarnings("unchecked")
-    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+    public void onViewDetachedFromWindow(VH holder) {
         wrappedAdapter.onViewDetachedFromWindow(holder);
     }
 
@@ -138,13 +119,22 @@ public class RecyclerWrapperAdapter extends RecyclerView.Adapter {
     /**
      * {@code RecyclerWrapperAdapter} builder static inner class.
      */
-    public static final class Builder {
-        private final Callback callback;
-        private final RecyclerView.Adapter wrappedAdapter;
-
-        public Builder(RecyclerView.Adapter wrappedAdapter, Callback callback) {
-            this.callback = callback;
+    public static final class Builder<VH extends RecyclerView.ViewHolder> {
+        private final RecyclerView.Adapter<VH> wrappedAdapter;
+        public Builder(RecyclerView.Adapter<VH> wrappedAdapter) {
             this.wrappedAdapter = wrappedAdapter;
+        }
+
+        private Consumer<VH> onCreatedCallback;
+        public Builder<VH> with(Consumer<VH> consumer) {
+            onCreatedCallback = consumer;
+            return this;
+        }
+
+        private BiConsumer<VH, Integer> onBindCallback;
+        public Builder<VH> with(BiConsumer<VH, Integer> biConsumer) {
+            onBindCallback = biConsumer;
+            return this;
         }
 
         /**
@@ -152,8 +142,8 @@ public class RecyclerWrapperAdapter extends RecyclerView.Adapter {
          *
          * @return a {@code RecyclerWrapperAdapter} built with parameters of this {@code RecyclerWrapperAdapter.Builder}
          */
-        RecyclerWrapperAdapter build() {
-            return new RecyclerWrapperAdapter(this);
+        RecyclerWrapperAdapter<VH> build() {
+            return new RecyclerWrapperAdapter<>(this, onCreatedCallback, onBindCallback);
         }
     }
 }

@@ -1,4 +1,4 @@
-include ':sample'
-include ':adapterselector'
+include ':recycler-adapter-selector-demo-app'
+include ':recycler-adapter-selector-library'
 
-rootProject.name = "recycler-utility-root"
+rootProject.name = "recycler-adapter-selector"
