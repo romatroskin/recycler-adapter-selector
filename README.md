@@ -20,7 +20,7 @@ repositories {
 ```
 
 ```groovy
-compile 'io.github.romatroskin:recycler-adapter-selector:0.4-SNAPSHOT'
+compile 'io.github.romatroskin:recycler-adapter-selector:0.6.0-SNAPSHOT'
 ```
 
 Development
