@@ -28,21 +28,21 @@ def isReleaseBuild() {
 }
 
 def getReleaseRepositoryUrl() {
-    return properties.hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL :
-            "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+    return properties.get('RELEASE_REPOSITORY_URL',
+            "https://oss.sonatype.org/service/local/staging/deploy/maven2/")
 }
 
 def getSnapshotRepositoryUrl() {
-    return properties.hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL :
-            "https://oss.sonatype.org/content/repositories/snapshots/"
+    return properties.get('SNAPSHOT_REPOSITORY_URL',
+            "https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
 def getRepositoryUsername() {
-    return properties.hasProperty('SONATYPE_NEXUS_USERNAME') ? SONATYPE_NEXUS_USERNAME : ""
+    return properties.get('SONATYPE_NEXUS_USERNAME', "")
 }
 
 def getRepositoryPassword() {
-    return properties.hasProperty('SONATYPE_NEXUS_PASSWORD') ? SONATYPE_NEXUS_PASSWORD : ""
+    return properties.get('SONATYPE_NEXUS_PASSWORD', "")
 }
 
 afterEvaluate { project ->
