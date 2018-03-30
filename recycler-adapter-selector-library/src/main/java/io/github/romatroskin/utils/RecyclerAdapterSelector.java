@@ -1,7 +1,6 @@
 package io.github.romatroskin.utils;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -56,46 +55,46 @@ final class RecyclerAdapterSelector extends AdapterSelector {
         adapter = recyclerView.getAdapter();
 
         final RecyclerWrapperAdapter.Builder<? extends RecyclerView.ViewHolder> wab =
-                new RecyclerWrapperAdapter.Builder<>(adapter)
-                        .with(holder -> {
-                            final Context context = holder.itemView.getContext();
-                            final Drawable defaultBackgroundDrawable = holder.itemView.getBackground();
-
-                            @DrawableRes int backgroundResource;
-                            if(multiselection) {
-                                holder.itemView.setOnLongClickListener(view -> {
-                                    final AppCompatActivity activity = (AppCompatActivity) context;
-                                    if(actionMode == null) {
-                                        actionMode = activity.startSupportActionMode(new CallbackImpl());
-                                        toggleMultiSelection(holder.getAdapterPosition());
-                                    }
-
-                                    return true;
-                                });
-
-                                holder.itemView.setOnClickListener(view -> {
-                                    if(actionMode != null) {
-                                        toggleMultiSelection(holder.getAdapterPosition());
-                                    }
-                                });
-
-                                backgroundResource = R.drawable.adapter_selector;
-
-                            } else {
-                                holder.itemView.setOnClickListener(onClickListener != null
-                                        ? onClickListener : popupMenu != null? (View.OnClickListener) view -> popupMenu.show() : null);
-
-                                backgroundResource = AttrUtils.obtainResId(context,
-                                        android.R.attr.selectableItemBackground);
+                new RecyclerWrapperAdapter.Builder<>(adapter).with(holder -> {
+                    final Context context = holder.itemView.getContext();
+                    @DrawableRes int backgroundResource;
+                    if(multiselection) {
+                        holder.itemView.setOnLongClickListener(view -> {
+                            final AppCompatActivity activity = (AppCompatActivity) context;
+                            if(actionMode == null) {
+                                actionMode = activity.startSupportActionMode(new CallbackImpl());
+                                toggleMultiSelection(holder.getAdapterPosition());
                             }
 
-                            if(holder.itemView instanceof FrameLayout) {
-                                final FrameLayout frameLayout = (FrameLayout) holder.itemView;
-                                frameLayout.setForeground(ContextCompat.getDrawable(context, backgroundResource));
-                            } else {
-                                holder.itemView.setBackgroundResource(backgroundResource);
+                            return true;
+                        });
+
+                        holder.itemView.setOnClickListener(view -> {
+                            if(actionMode != null) {
+                                toggleMultiSelection(holder.getAdapterPosition());
                             }
-                        })
+                        });
+
+                        backgroundResource = R.drawable.adapter_selector;
+
+                    } else {
+                        holder.itemView.setOnClickListener(onClickListener != null
+                                ? onClickListener : popupMenu != null
+                                ? (View.OnClickListener) view -> popupMenu.show() : null);
+
+                        backgroundResource = AttrUtils.obtainResId(context,
+                                android.R.attr.selectableItemBackground);
+                    }
+
+                    if(holder.itemView instanceof FrameLayout) {
+                        final FrameLayout frameLayout = (FrameLayout) holder.itemView;
+                        frameLayout.setForeground(ContextCompat.getDrawable(
+                                context, backgroundResource)
+                        );
+                    } else {
+                        holder.itemView.setBackgroundResource(backgroundResource);
+                    }
+                })
                         .with((holder, position) -> holder.itemView.setSelected(
                                 multiselection && selectedItems.get(
                                         position, false))
@@ -182,12 +181,13 @@ final class RecyclerAdapterSelector extends AdapterSelector {
         private boolean multiselection;
         private final RecyclerView recyclerView;
 
-        public Builder(RecyclerView recyclerView) {
+        Builder(RecyclerView recyclerView) {
             this.recyclerView = recyclerView;
         }
 
         /**
-         * Sets the {@code popupMenu} and returns a reference to this Builder so that the methods can be chained together.
+         * Sets the {@code popupMenu} and returns a reference to this Builder so that the methods
+         * can be chained together.
          *
          * @param val the {@code popupMenu} to set
          * @return a reference to this Builder
@@ -198,7 +198,8 @@ final class RecyclerAdapterSelector extends AdapterSelector {
         }
 
         /**
-         * Sets the {@code callback} and returns a reference to this Builder so that the methods can be chained together.
+         * Sets the {@code callback} and returns a reference to this Builder so that the methods
+         * can be chained together.
          *
          * @param val the {@code callback} to set
          * @return a reference to this Builder
@@ -209,7 +210,8 @@ final class RecyclerAdapterSelector extends AdapterSelector {
         }
 
         /**
-         * Sets the {@code onClickListener} and returns a reference to this Builder so that the methods can be chained together.
+         * Sets the {@code onClickListener} and returns a reference to this Builder
+         * so that the methods can be chained together.
          *
          * @param val the {@code onClickListener} to set
          * @return a reference to this Builder
@@ -220,7 +222,8 @@ final class RecyclerAdapterSelector extends AdapterSelector {
         }
 
         /**
-         * Sets the {@code multiselection} and returns a reference to this Builder so that the methods can be chained together.
+         * Sets the {@code multiselection} and returns a reference to this Builder
+         * so that the methods can be chained together.
          *
          * @param val the {@code multiselection} to set
          * @return a reference to this Builder
@@ -233,7 +236,8 @@ final class RecyclerAdapterSelector extends AdapterSelector {
         /**
          * Returns a {@code RecyclerAdapterSelector} built from the parameters previously set.
          *
-         * @return a {@code RecyclerAdapterSelector} built with parameters of this {@code RecyclerAdapterSelector.Builder}
+         * @return a {@code RecyclerAdapterSelector} built with parameters
+         * of this {@code RecyclerAdapterSelector.Builder}
          */
         public RecyclerAdapterSelector build() {
             return new RecyclerAdapterSelector(this);

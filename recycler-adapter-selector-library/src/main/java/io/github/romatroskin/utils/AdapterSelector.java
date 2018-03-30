@@ -14,15 +14,22 @@ public abstract class AdapterSelector {
         return new RecyclerAdapterSelector.Builder(recyclerView);
     }
 
-    public static RecyclerAdapterSelector.Builder with(RecyclerView recyclerView, ActionMode.Callback callback) {
-        return new RecyclerAdapterSelector.Builder(recyclerView).withCallback(callback).withMultiselection(true);
+    public static RecyclerAdapterSelector.Builder with(RecyclerView recyclerView,
+                                                       ActionMode.Callback callback) {
+        return new RecyclerAdapterSelector.Builder(recyclerView)
+                .withCallback(callback)
+                .withMultiselection(true);
     }
 
-    public static RecyclerAdapterSelector.Builder with(RecyclerView recyclerView, PopupMenu popupMenu) {
-        return new RecyclerAdapterSelector.Builder(recyclerView).withPopupMenu(popupMenu);
+    public static RecyclerAdapterSelector.Builder with(RecyclerView recyclerView,
+                                                       PopupMenu popupMenu) {
+        return new RecyclerAdapterSelector.Builder(recyclerView)
+                .withPopupMenu(popupMenu);
     }
 
-    public static RecyclerAdapterSelector.Builder with(RecyclerView recyclerView, View.OnClickListener onClickListener) {
-        return new RecyclerAdapterSelector.Builder(recyclerView).withOnClickListener(onClickListener);
+    public static RecyclerAdapterSelector.Builder with(RecyclerView recyclerView,
+                                                       View.OnClickListener onClickListener) {
+        return new RecyclerAdapterSelector.Builder(recyclerView)
+                .withOnClickListener(onClickListener);
     }
 }

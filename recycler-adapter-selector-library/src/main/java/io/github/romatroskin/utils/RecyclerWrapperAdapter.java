@@ -14,12 +14,15 @@ import io.reactivex.functions.Consumer;
  * @version 1
  * @since 12/7/16
  */
-public class RecyclerWrapperAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
-    final private RecyclerView.Adapter<VH> wrappedAdapter;
+public class RecyclerWrapperAdapter<VH extends RecyclerView.ViewHolder>
+        extends RecyclerView.Adapter<VH> {
+    private final RecyclerView.Adapter<VH> wrappedAdapter;
 
     private Consumer<VH> createFunction;
     private BiConsumer<VH, Integer> bindFunction;
-    private RecyclerWrapperAdapter(Builder<VH> builder, Consumer<VH> create, BiConsumer<VH, Integer> bind) {
+    private RecyclerWrapperAdapter(Builder<VH> builder,
+                                   Consumer<VH> create,
+                                   BiConsumer<VH, Integer> bind) {
         wrappedAdapter = builder.wrappedAdapter;
         createFunction = create;
         bindFunction = bind;
@@ -140,7 +143,8 @@ public class RecyclerWrapperAdapter<VH extends RecyclerView.ViewHolder> extends 
         /**
          * Returns a {@code RecyclerWrapperAdapter} built from the parameters previously set.
          *
-         * @return a {@code RecyclerWrapperAdapter} built with parameters of this {@code RecyclerWrapperAdapter.Builder}
+         * @return a {@code RecyclerWrapperAdapter} built with parameters
+         * of this {@code RecyclerWrapperAdapter.Builder}
          */
         RecyclerWrapperAdapter<VH> build() {
             return new RecyclerWrapperAdapter<>(this, onCreatedCallback, onBindCallback);

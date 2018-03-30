@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDestroyActionMode(ActionMode mode) {}
+            public void onDestroyActionMode(ActionMode mode) { }
         }).build();
     }
 
