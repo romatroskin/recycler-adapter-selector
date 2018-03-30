@@ -9,7 +9,7 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 27
-        buildConfigField "String", "LIBRARY_VERSION", "\"${rootProject.ext.VERSION_NAME}\""
+//        buildConfigField "String", "LIBRARY_VERSION", "\"${rootProject.ext.VERSION_NAME}\""
         buildConfigField "String", "GIT_SHA", "\"${gitSha()}\""
     }
 
@@ -30,4 +30,4 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
 }
 
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+apply from: 'publish.gradle'

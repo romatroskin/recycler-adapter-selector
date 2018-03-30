@@ -1,13 +1,28 @@
 language: android
+jdk: oraclejdk8
+
+# Use the Travis Container-Based Infrastructure
+sudo: false
+
+cache:
+  directories:
+    - ${TRAVIS_BUILD_DIR}/gradle/caches/
+    - ${TRAVIS_BUILD_DIR}/gradle/wrapper/dists/
+
+env:
+  global:
+    - ANDROID_API_LEVEL=27
+    - ANDROID_BUILD_TOOLS_VERSION=27.0.3
+
 android:
     components:
         - tools
         - platform-tools
-        - build-tools
-        - android-27
+        - tools
+        - build-tools-$ANDROID_BUILD_TOOLS_VERSION
+        - android-$ANDROID_API_LEVEL
         - extra-google-google_play_services
         - extra-google-m2repository
         - extra-android-m2repository
-        - addon-google_apis-27
-licenses:
-  - 'android-sdk-license-.+'
+        - extra-android-support
+        - addon-google_apis-$ANDROID_API_LEVEL
